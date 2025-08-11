@@ -72,6 +72,8 @@ services:
     depends_on: *langfuse-depends-on
     ports:
       - 3000:3000
+    networks:
+      - dokploy-network
     environment:
       <<: *langfuse-worker-env
       NEXTAUTH_SECRET: mysecret # CHANGEME
@@ -99,6 +101,8 @@ services:
     ports:
       - 127.0.0.1:8123:8123
       - 127.0.0.1:9000:9000
+    networks:
+      - dokploy-network
     healthcheck:
       test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
       interval: 5s
@@ -118,6 +122,8 @@ services:
     ports:
       - 9090:9000
       - 127.0.0.1:9091:9001
+    networks:
+      - dokploy-network
     volumes:
       - langfuse_minio_data:/data
     healthcheck:
@@ -135,6 +141,8 @@ services:
       --requirepass ${REDIS_AUTH:-myredissecret}
     ports:
       - 127.0.0.1:6379:6379
+    networks:
+      - dokploy-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 3s
@@ -155,6 +163,8 @@ services:
       POSTGRES_DB: postgres
     ports:
       - 127.0.0.1:5432:5432
+    networks:
+      - dokploy-network
     volumes:
       - langfuse_postgres_data:/var/lib/postgresql/data
 
@@ -167,3 +177,7 @@ volumes:
     driver: local
   langfuse_minio_data:
     driver: local
+
+networks:
+  dokploy-network:
+    external: true
